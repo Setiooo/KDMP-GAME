@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KDMP — Koperasi Desa Merah Putih</title>
+<meta name="description" content="Game simulasi ekonomi desa berbasis koperasi. Bangun Koperasi Desa Merah Putih dari warung kecil menjadi pusat ekonomi desa." />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="icon" href="assets/icon-192.png" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#D7263D" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="KDMP" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+</head>
+<body>
+
+<!-- Layar Judul -->
+<div id="titleScreen" class="title-screen">
+  <div class="title-card">
+    <div class="title-logo">🏪</div>
+    <h1>Koperasi Desa<br><span>Merah Putih</span></h1>
+    <p class="title-sub">Simulasi ekonomi desa berbasis koperasi. Pimpin, kelola, dan bangun kesejahteraan bersama.</p>
+    <div class="title-actions">
+      <button id="btnStart" class="btn primary big">▶ Mulai Baru</button>
+      <button id="btnContinue" class="btn big" style="display:none">📂 Lanjutkan</button>
+      <button id="btnInstall" class="btn big" style="display:none">📲 Pasang App</button>
+    </div>
+    <div class="title-tips">💡 Beli hasil panen → simpan di gudang → jual ke warga. Jaga <b>kepercayaan</b> &amp; <b>kepuasan</b> anggota, bukan cuma laba!</div>
+  </div>
+  <div class="title-foot">v1.0 · Dibuat dengan HTML/CSS/JS · Tanpa dependency</div>
+</div>
+
+<!-- Header -->
+<header class="topbar">
+  <div class="brand"><span class="brand-logo">🏪</span>
+    <div><div class="brand-name">KDMP</div><div class="brand-level" id="coopLevel">Koperasi Rintisan</div></div>
+  </div>
+  <div class="top-meta">
+    <div class="meta-chip" id="dateLabel">Tahun 1 · Hari 1</div>
+    <div class="meta-chip" id="seasonLabel">☀️ Kemarau</div>
+  </div>
+  <div class="top-controls">
+    <button id="btnPause" class="ctrl" title="Jeda">⏸</button>
+    <button id="btnPlay" class="ctrl on" title="Main">▶</button>
+    <button id="btnFast" class="ctrl" title="Cepat">⏩</button>
+    <button id="btnSave" class="ctrl wide" title="Simpan">💾</button>
+  </div>
+</header>
+
+<!-- KPI strip -->
+<section class="kpi-strip">
+  <div class="kpi"><div class="kpi-label">Kas</div><div class="kpi-value" id="kpiCash">Rp 0</div></div>
+  <div class="kpi"><div class="kpi-label">Kekayaan Bersih</div><div class="kpi-value" id="kpiNet">Rp 0</div></div>
+  <div class="kpi"><div class="kpi-label">Anggota</div><div class="kpi-value" id="kpiMembers">0</div></div>
+  <div class="kpi"><div class="kpi-label">Kolam SHU</div><div class="kpi-value" id="kpiSHU">Rp 0</div></div>
+  <div class="kpi gauges">
+    <div class="gauge-item"><span>Kepercayaan <b id="gaugeTrustTxt">0</b></span><div class="gauge"><i id="gaugeTrust"></i></div></div>
+    <div class="gauge-item"><span>Kepuasan <b id="gaugeSatTxt">0</b></span><div class="gauge"><i id="gaugeSat"></i></div></div>
+    <div class="gauge-item"><span>Reputasi <b id="gaugeRepTxt">0</b></span><div class="gauge"><i id="gaugeRep"></i></div></div>
+  </div>
+</section>
+
+<!-- Main layout -->
+<main class="layout">
+  <!-- Kiri: desa + grafik + log -->
+  <div class="left">
+    <div class="village-wrap">
+      <canvas id="village"></canvas>
+      <div class="village-hud">
+        <div class="storage"><span>Gudang</span><div class="storage-bar"><i id="storageBar"></i></div><span id="storageText">0 / 0</span></div>
+        <button id="btnAuto" class="btn tiny">🤖 Auto-Restock: ON</button>
+      </div>
+      <div class="research-badge" id="researchStatus"></div>
+    </div>
+    <div class="bottom-row">
+      <div class="card chart-card">
+        <div class="card-title">Tren Kekayaan Bersih &amp; Kepercayaan</div>
+        <canvas id="chart"></canvas>
+        <div class="chart-legend"><span class="dot blue"></span>Kekayaan bersih <span class="dot green"></span>Kepercayaan</div>
+      </div>
+      <div class="card log-card">
+        <div class="card-title">Aktivitas &amp; Berita</div>
+        <div id="logBox" class="log-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kanan: panel kontrol -->
+  <aside class="right">
+    <div class="tabs">
+      <button class="tab active" data-tab="pasar">🛒 Pasar</button>
+      <button class="tab" data-tab="unit">🏗️ Unit</button>
+      <button class="tab" data-tab="riset">🔬 Riset</button>
+      <button class="tab" data-tab="keuangan">💰 Keuangan</button>
+    </div>
+    <div class="tab-scroll">
+      <div class="tabpanel active" data-tab="pasar"><div id="panelPasar"></div></div>
+      <div class="tabpanel" data-tab="unit"><div id="panelUnit"></div></div>
+      <div class="tabpanel" data-tab="riset"><div id="panelRiset"></div></div>
+      <div class="tabpanel" data-tab="keuangan"><div id="panelKeuangan"></div></div>
+    </div>
+  </aside>
+</main>
+
+<!-- Modal -->
+<div id="modal" class="modal"><div class="modal-box" id="modalBody"></div></div>
+<div id="toast" class="toast"></div>
+
+<script src="js/config.js"></script>
+<script src="js/economy.js"></script>
+<script src="js/render.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

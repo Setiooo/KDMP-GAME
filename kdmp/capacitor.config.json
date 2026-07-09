@@ -1,0 +1,7 @@
+{
+  "appId": "id.desa.kdmp",
+  "appName": "KDMP",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "backgroundColor": "#fbe9e7"
+}
